@@ -2,10 +2,22 @@
   <id>ro.bogdananton.testNameGenerator</id>
   <name>testNameGenerator</name>
   <version>1.0</version>
-  <vendor email="contact@bogdananton.ro" url="http://www.bogdananton.ro">Bogdan Anton</vendor>
+  <vendor email="contact@bogdananton.ro"></vendor>
 
   <description><![CDATA[
-      Generates a PHPUnit test method based on a string
+    **Shortcut:**<br/>
+    Ctrl + Shift + U<br/>
+    <br/>
+    **Features:**<br/>
+    - Supports multiple cursors<br/>
+    - Can insert test methods based on the current cursor(s) lines contents<br/>
+    <br/>
+    **Limitations / bugs:**<br/>
+    - when editor not fully loaded and shortcut triggered, may cause Exception<br/>
+    - will only add test names, does not update existing ones by editing the original text in the method's doc block comment.<br/>
+    - doesn't use the editor's tab / spaces settings, uses "\t" by default<br/>
+    - doesn't Undo<br/>
+    - works only in Intellij IDEA Community Edition
     ]]></description>
 
   <change-notes><![CDATA[
@@ -13,7 +25,8 @@
     ]]>
   </change-notes>
 
-  <idea-version since-build="131"/>
+  <idea-version since-build="121"/>
+
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
   </extensions>
@@ -28,8 +41,8 @@
 
   <actions>
     <action id="doGenerate" class="ro.bogdananton.testNameGenerator.generateTestName" text="generateTestName">
-      <add-to-group group-id="EditorActions" anchor="first"/>
-      <keyboard-shortcut first-keystroke="ctrl alt u" keymap="$default"/>
+      <add-to-group group-id="NewGroup" anchor="first"/>
+      <keyboard-shortcut first-keystroke="ctrl alt U" keymap="$default"/>
     </action>
   </actions>
 
