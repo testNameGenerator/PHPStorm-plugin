@@ -1,0 +1,36 @@
+<idea-plugin version="2">
+  <id>ro.bogdananton.testNameGenerator</id>
+  <name>testNameGenerator</name>
+  <version>1.0</version>
+  <vendor email="contact@bogdananton.ro" url="http://www.bogdananton.ro">Bogdan Anton</vendor>
+
+  <description><![CDATA[
+      Generates a PHPUnit test method based on a string
+    ]]></description>
+
+  <change-notes><![CDATA[
+
+    ]]>
+  </change-notes>
+
+  <idea-version since-build="131"/>
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+  </extensions>
+
+  <application-components>
+    <!-- Add your application components here -->
+  </application-components>
+
+  <project-components>
+    <!-- Add your project components here -->
+  </project-components>
+
+  <actions>
+    <action id="doGenerate" class="ro.bogdananton.testNameGenerator.generateTestName" text="generateTestName">
+      <add-to-group group-id="EditorActions" anchor="first"/>
+      <keyboard-shortcut first-keystroke="ctrl alt u" keymap="$default"/>
+    </action>
+  </actions>
+
+</idea-plugin>
