@@ -25,25 +25,26 @@
     ]]>
   </change-notes>
 
-  <idea-version since-build="121"/>
+  <idea-version since-build="131"/>
+  <depends>com.intellij.modules.platform</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
   </extensions>
 
   <application-components>
-    <!-- Add your application components here -->
+    <component>
+      <implementation-class>ro.bogdananton.testNameGenerator.BindKeymap</implementation-class>
+    </component>
   </application-components>
 
   <project-components>
-    <!-- Add your project components here -->
   </project-components>
 
   <actions>
-    <action id="doGenerate" class="ro.bogdananton.testNameGenerator.generateTestName" text="generateTestName">
-      <add-to-group group-id="NewGroup" anchor="first"/>
-      <keyboard-shortcut first-keystroke="ctrl alt U" keymap="$default"/>
-    </action>
+    <action id="generateTestMethod"
+            class="ro.bogdananton.testNameGenerator.generateTestName"
+            text="testNameGenerator"
+            description="Generate test method based on a string."/>
   </actions>
 
 </idea-plugin>
