@@ -1,25 +1,23 @@
 package ro.bogdananton.testNameGenerator;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataConstants;
-import com.intellij.openapi.application.Application;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.*;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.util.SystemProperties;
 import org.apache.commons.lang.WordUtils;
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.application.Result;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class generateTestName extends AnAction {
     public static Document doc;
-    public static String newDocumentContents = "";
+    public static HashMap<Integer, ChangeEntry> changeList;
 
     public void actionPerformed(AnActionEvent e) {
         Editor editor = (Editor) DataManager.getInstance().getDataContext().getData(DataConstants.EDITOR);
@@ -28,11 +26,12 @@ public class generateTestName extends AnAction {
         Document doc = editor.getDocument();
         generateTestName.doc = doc;
 
-        String newDocumentContents = "";
         int lineStart = 0;
         int lineEnd = 0;
-        int oldLineEnd = 0;
 
+        changeList = new HashMap<Integer, ChangeEntry>();
+
+        int cursor = carets.size();
         for (Caret caret: carets) {
             LogicalPosition lp = caret.getLogicalPosition();
 
@@ -41,26 +40,31 @@ public class generateTestName extends AnAction {
             TextRange lineRange = new TextRange(lineStart, lineEnd);
             String lineContents = doc.getText(lineRange).trim();
 
-            newDocumentContents += doc.getText(new TextRange(oldLineEnd, lineStart));
-            newDocumentContents += getPreparedTestMethod(lineContents);
+            ChangeEntry changeItem = new ChangeEntry();
+            changeItem.lineNumber = lp.line;
+            changeItem.lineContents = getPreparedTestMethod(lineContents);
 
-            oldLineEnd = lineEnd;
+            generateTestName.changeList.put(cursor, changeItem);
+            cursor--;
         }
-        newDocumentContents += doc.getText(new TextRange(lineEnd, doc.getLineEndOffset(doc.getLineCount()-1)));
-        generateTestName.newDocumentContents = newDocumentContents;
 
-        final Application application = ApplicationManager.getApplication();
-        final Runnable runnable = new Runnable(){
-            @Override public void run(){
-                application.runWriteAction(new Runnable(){
-                       @Override public void run(){
-                           generateTestName.doc.setText(generateTestName.newDocumentContents);
-                       }
-                   }
-                );
+        new WriteCommandAction(editor.getProject()) {
+            @Override
+            protected void run(Result result) throws Throwable {
+                Set keySet = generateTestName.changeList.keySet();
+                Object[] tempArray = keySet.toArray();
+
+                for (int i = 0; i < generateTestName.changeList.size(); i++) {
+                    ChangeEntry changeItem = generateTestName.changeList.get(tempArray[i]);
+
+                    int lineStart = generateTestName.doc.getLineStartOffset(changeItem.lineNumber);
+                    int lineEnd = generateTestName.doc.getLineEndOffset(changeItem.lineNumber);
+
+                    generateTestName.doc.replaceString(lineStart, lineEnd, changeItem.lineContents);
+                }
+
             }
-        };
-        application.invokeLater(runnable, ModalityState.NON_MODAL);
+        }.execute();
     }
 
     public static String getPreparedTestMethod(String originalText)
