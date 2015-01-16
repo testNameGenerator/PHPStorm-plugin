@@ -1,6 +1,7 @@
 package ro.bogdananton.testNameGenerator;
 
 public class ChangeEntry {
-    public int lineNumber = 0;
+    public int offsetStart = 0;
+    public int offsetEnd = 0;
     public String lineContents = "";
 }
