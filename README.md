@@ -12,3 +12,7 @@ Ctrl + Shift + U
 **Install:**
 Open PhpStorm's File / Settings... menu, go to Plugins and click the "Install plugin from disk..." button.
 Search for the jar file (download from the [Releases page](https://github.com/bogdananton/PhpStorm-testNameGenerator/releases)), click OK and restart the editor.
+
+
+Check out the [SublimeText](https://github.com/bogdananton/Sublime-testNameGenerator) or [Eclipse](https://github.com/sorinstanila/Eclipse-testNameGenerator) versions of the plugin.
+Feel free to [submit bugs or feature requests](https://github.com/bogdananton/Sublime-testNameGenerator/issues).
