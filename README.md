@@ -15,4 +15,4 @@ Search for the jar file (download from the [Releases page](https://github.com/bo
 
 
 Check out the [SublimeText](https://github.com/bogdananton/Sublime-testNameGenerator) or [Eclipse](https://github.com/sorinstanila/Eclipse-testNameGenerator) versions of the plugin.
-Feel free to [submit bugs or feature requests](https://github.com/bogdananton/Sublime-testNameGenerator/issues).
+Feel free to [submit bugs or feature requests](https://github.com/bogdananton/PhpStorm-testNameGenerator/issues).
