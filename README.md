@@ -3,11 +3,16 @@ Ctrl + Shift + U
 
 **Features:**
 - Supports multiple cursors
-- Can insert test methods based on the current cursor(s) lines contents
+- Can insert test methods based on the current cursor(s) lines contents. Will update method if shortcut is triggered from inside a docblock comment that's followed by a "public function test______" string
 
 **Limitations / bugs:**
-- when editor not fully loaded and shortcut triggered, may cause Exception
-- will only add test names, does not update existing ones by editing the original text in the method's doc block comment.
 - doesn't use the editor's tab / spaces settings, uses "\t" by default
-- doesn't Undo
-- works only in Intellij IDEA Community Edition
+- no PHP-only file filtering was set, will trigger and behave the same for any file
+
+**Install:**
+Open PhpStorm's File / Settings... menu, go to Plugins and click the "Install plugin from disk..." button.
+Search for the jar file (download from the [Releases page](https://github.com/bogdananton/PhpStorm-testNameGenerator/releases)), click OK and restart the editor.
+
+
+Check out the [SublimeText](https://github.com/bogdananton/Sublime-testNameGenerator) or [Eclipse](https://github.com/sorinstanila/Eclipse-testNameGenerator) versions of the plugin.
+Feel free to [submit bugs or feature requests](https://github.com/bogdananton/PhpStorm-testNameGenerator/issues).
