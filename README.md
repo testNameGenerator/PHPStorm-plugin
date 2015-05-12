@@ -1,5 +1,5 @@
 **Shortcut:**
-Ctrl + Shift + U
+Ctrl + Alt + U, U
 
 **Features:**
 - Supports multiple cursors

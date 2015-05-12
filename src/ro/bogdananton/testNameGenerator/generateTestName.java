@@ -159,7 +159,7 @@ public class generateTestName extends AnAction {
 
     public static String getTabChar()
     {
-        return "\t";
+        return "    ";
     }
 
     public static String getLineDelimiter()
@@ -171,7 +171,11 @@ public class generateTestName extends AnAction {
     {
         final StringBuilder ret = new StringBuilder(init.length());
         for (final String word : init.split(" ")) {
-            ret.append(WordUtils.capitalize(word));
+            if (word.length() > 1) {
+                ret.append(WordUtils.capitalize(word));
+            } else {
+                ret.append(word.toUpperCase());
+            }
         }
         return ret.toString();
     }

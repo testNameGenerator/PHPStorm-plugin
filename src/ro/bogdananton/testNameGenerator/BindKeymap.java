@@ -14,9 +14,8 @@ public class BindKeymap  implements ApplicationComponent {
     }
 
     public void initComponent(){
-        //hack: hooking into ctrl+shift+T ;)
         final Keymap keymap = KeymapManagerImpl.getInstance().getActiveKeymap();
-        keymap.addShortcut("generateTestMethod", new KeyboardShortcut(KeyStroke.getKeyStroke('U', InputEvent.CTRL_MASK + InputEvent.ALT_MASK), null));
+        keymap.addShortcut("generateTestMethod", new KeyboardShortcut(KeyStroke.getKeyStroke('U', InputEvent.CTRL_MASK + InputEvent.ALT_MASK), KeyStroke.getKeyStroke('U', 0)));
     }
 
     public void disposeComponent(){
