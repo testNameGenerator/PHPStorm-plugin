@@ -2,7 +2,7 @@ package ro.bogdananton.testNameGenerator.languages;
 
 import ro.bogdananton.testNameGenerator.utils.StringUtils;
 
-abstract public class Generic {
+class ALanguage {
 
     public static String getPreparedMethodName(String originalText) {
         String methodNameText = originalText.replaceAll("\\P{Alnum}", " ").trim();

@@ -1,17 +1,17 @@
 package ro.bogdananton.testNameGenerator.languages;
 
 import org.jetbrains.annotations.NotNull;
-import ro.bogdananton.testNameGenerator.settings.EditorSettings;
+import ro.bogdananton.testNameGenerator.settings.EditorDetails;
 
 import java.util.regex.Pattern;
 
-public class PHP extends Generic {
+public class PHP extends ALanguage {
     public static final String REGEX_PATTERN_METHOD_TEST = "public([\\s]*)function([\\s]*)test([\\w]*)\\(";
 
     @NotNull
     public static String getNewTestMethodContentString(String originalText) {
-        String tab = EditorSettings.getTabChar();
-        String lineDelimiter = EditorSettings.getLineDelimiter();
+        String tab = EditorDetails.getTabChar();
+        String lineDelimiter = EditorDetails.getLineDelimiter();
         String preparedMethodName = getPreparedMethodName(originalText);
 
         String commentText = lineDelimiter + tab + "/**" + lineDelimiter +

@@ -2,6 +2,11 @@ package ro.bogdananton.testNameGenerator.datastructure;
 
 public class ChangeEntry {
 
+    public ChangeEntry()
+    {
+        
+    }
+
     public ChangeEntry(int offsetStart, int offsetEnd, String lineContents) {
         this.offsetStart = offsetStart;
         this.offsetEnd = offsetEnd;

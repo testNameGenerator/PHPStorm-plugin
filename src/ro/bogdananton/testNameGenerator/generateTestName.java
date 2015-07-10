@@ -3,15 +3,16 @@ package ro.bogdananton.testNameGenerator;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.editor.*;
-import com.intellij.openapi.util.TextRange;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.application.Result;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ro.bogdananton.testNameGenerator.datastructure.ChangeEntry;
+import ro.bogdananton.testNameGenerator.datastructure.CodeChunk;
 import ro.bogdananton.testNameGenerator.datastructure.ExistingTestEntry;
-import ro.bogdananton.testNameGenerator.languages.Generic;
 import ro.bogdananton.testNameGenerator.languages.PHP;
+import ro.bogdananton.testNameGenerator.settings.EditorDetails;
 import ro.bogdananton.testNameGenerator.utils.EditorIntegration;
 import ro.bogdananton.testNameGenerator.utils.TestManager;
 
@@ -57,25 +58,20 @@ public class generateTestName extends AnAction {
 
     @NotNull
     private ChangeEntry getChangeEntry(Document doc, int currentLine) {
-        int lineStart;
-        int lineEnd;
-        lineStart = doc.getLineStartOffset(currentLine);
-        lineEnd = doc.getLineEndOffset(currentLine);
-        TextRange lineRange = new TextRange(lineStart, lineEnd);
-        String lineContents = doc.getText(lineRange).trim();
+        CodeChunk line = CodeChunk.getInstance(doc, currentLine, currentLine);
 
         ExistingTestEntry updateTest = TestManager.getInstance(currentLine, doc);
+        String contents;
+
         if (updateTest.doesApply()) {
-            String preparedMethodName = Generic.getPreparedMethodName(lineContents);
-            lineStart = doc.getLineStartOffset(updateTest.getMethodLine());
-            lineEnd = doc.getLineEndOffset(updateTest.getMethodLine());
-            lineRange = new TextRange(lineStart, lineEnd);
-            lineContents = ro.bogdananton.testNameGenerator.settings.EditorSettings.getTabChar() + doc.getText(lineRange).trim().replaceAll(updateTest.getMethodName(), preparedMethodName);
+            String preparedMethodName = PHP.getPreparedMethodName(line.contents);
+            CodeChunk existingTestChunk = updateTest.getCodeChunk(doc);
+            contents = EditorDetails.getTabChar() + existingTestChunk.contents.replaceAll(updateTest.getMethodName(), preparedMethodName);
+            return new ChangeEntry(existingTestChunk.startLine, existingTestChunk.endLine, contents);
+
         } else {
-            lineContents = PHP.getNewTestMethodContentString(lineContents);
+            contents = PHP.getNewTestMethodContentString(line.contents);
+            return new ChangeEntry(line.startLine, line.endLine, contents);
         }
-
-        return new ChangeEntry(lineStart, lineEnd, lineContents);
     }
-
 }

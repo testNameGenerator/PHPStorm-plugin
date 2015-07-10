@@ -1,5 +1,8 @@
 package ro.bogdananton.testNameGenerator.datastructure;
 
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.util.TextRange;
+
 public class ExistingTestEntry {
 
     public static int lineDifferenceBorder = 5; // search tolerance
@@ -39,5 +42,10 @@ public class ExistingTestEntry {
 
     public String getMethodName() {
         return this.MatchedTestName;
+    }
+
+    public CodeChunk getCodeChunk(Document doc)
+    {
+        return CodeChunk.getInstance(doc, getMethodLine(), getMethodLine());
     }
 }
