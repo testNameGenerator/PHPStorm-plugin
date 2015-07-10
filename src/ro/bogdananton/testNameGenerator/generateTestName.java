@@ -1,85 +1,107 @@
 package ro.bogdananton.testNameGenerator;
 
 import com.intellij.ide.DataManager;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataConstants;
 import com.intellij.openapi.editor.*;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.util.SystemProperties;
 import org.apache.commons.lang.WordUtils;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.application.Result;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class generateTestName extends AnAction {
+    public static final String REGEX_PATTERN_PHP_METHOD_TEST = "public([\\s]*)function([\\s]*)test([\\w]*)\\(";
     public static Document doc;
     public static HashMap<Integer, ChangeEntry> changeList;
 
     public void actionPerformed(AnActionEvent e) {
-        Editor editor = (Editor) DataManager.getInstance().getDataContext().getData(DataConstants.EDITOR);
-        CaretModel caretModel = editor.getCaretModel();
-        List<Caret> carets = caretModel.getAllCarets();
-        Document doc = editor.getDocument();
-        generateTestName.doc = doc;
+        try {
+            Editor editor = (Editor) DataManager.getInstance().getDataContext().getData(DataConstants.EDITOR);
+            CaretModel caretModel = getCaretModel(editor);
+            List<Caret> carets = caretModel.getAllCarets();
+            Document doc = getDocument(editor);
+            generateTestName.doc = doc;
 
-        int lineStart = 0;
-        int lineEnd = 0;
+            changeList = new HashMap<>();
 
-        changeList = new HashMap<Integer, ChangeEntry>();
-
-        int cursor = carets.size();
-        for (Caret caret: carets) {
-            LogicalPosition lp = caret.getLogicalPosition();
-
-            lineStart = doc.getLineStartOffset(lp.line);
-            lineEnd = doc.getLineEndOffset(lp.line);
-            TextRange lineRange = new TextRange(lineStart, lineEnd);
-            String lineContents = doc.getText(lineRange).trim();
-
-            ExistingTest updateTest = getInstance(lp.line, doc);
-            if (updateTest.doesApply()) {
-                String preparedMethodName = getPreparedMethodName(lineContents);
-                lineStart = doc.getLineStartOffset(updateTest.getMethodLine());
-                lineEnd = doc.getLineEndOffset(updateTest.getMethodLine());
-                lineRange = new TextRange(lineStart, lineEnd);
-                lineContents = doc.getText(lineRange).trim();
-                lineContents = getTabChar() + lineContents.replaceAll(updateTest.getMethodName(), preparedMethodName);
-            } else {
-                lineContents = getPreparedTestMethod(lineContents);
+            int cursor = carets.size();
+            for (Caret caret: carets) {
+                int currentLine = caret.getLogicalPosition().line;
+                generateTestName.changeList.put(cursor, getChangeEntry(doc, currentLine));
+                cursor--;
             }
 
-            ChangeEntry changeItem = new ChangeEntry();
-            changeItem.offsetStart = lineStart;
-            changeItem.offsetEnd = lineEnd;
-            changeItem.lineContents = lineContents;
-
-            generateTestName.changeList.put(cursor, changeItem);
-            cursor--;
-        }
-        new WriteCommandAction(editor.getProject()) {
-            @Override
-            protected void run(Result result) throws Throwable {
-                Set keySet = generateTestName.changeList.keySet();
-                Object[] tempArray = keySet.toArray();
-
-                for (int i = 0; i < generateTestName.changeList.size(); i++) {
-                    ChangeEntry changeItem = generateTestName.changeList.get(tempArray[i]);
-                    generateTestName.doc.replaceString(changeItem.offsetStart, changeItem.offsetEnd, changeItem.lineContents);
+            new WriteCommandAction(getProject(editor)) {
+                @Override
+                protected void run(@Nullable Result result) throws Throwable {
+                    for (ChangeEntry changeItem : generateTestName.changeList.values()) {
+                        generateTestName.doc.replaceString(changeItem.offsetStart, changeItem.offsetEnd, changeItem.lineContents);
+                    }
                 }
-            }
-        }.execute();
+            }.execute();
+
+        } catch (NullPointerException exception) {
+            String contents = "Failed to perform the action. Please report this issue: https://github.com/testNameGenerator/PHPStorm-plugin/issues";
+            showError(e, contents);
+        }
     }
 
+    private void showError(AnActionEvent e, String contents) {
+        String group = "testNameGenerator";
+        (new Notification(group, group, contents, NotificationType.ERROR)).notify(e.getProject());
+    }
+
+    private Project getProject(Editor editor) {
+        return editor.getProject();
+    }
+
+    @NotNull
+    private Document getDocument(Editor editor) {
+        return editor.getDocument();
+    }
+
+    @NotNull
+    private CaretModel getCaretModel(Editor editor) {
+        return editor.getCaretModel();
+    }
+
+    @NotNull
+    private ChangeEntry getChangeEntry(Document doc, int currentLine) {
+        int lineStart;
+        int lineEnd;
+        lineStart = doc.getLineStartOffset(currentLine);
+        lineEnd = doc.getLineEndOffset(currentLine);
+        TextRange lineRange = new TextRange(lineStart, lineEnd);
+        String lineContents = doc.getText(lineRange).trim();
+
+        ExistingTest updateTest = getInstance(currentLine, doc);
+        if (updateTest.doesApply()) {
+            String preparedMethodName = getPreparedMethodName(lineContents);
+            lineStart = doc.getLineStartOffset(updateTest.getMethodLine());
+            lineEnd = doc.getLineEndOffset(updateTest.getMethodLine());
+            lineRange = new TextRange(lineStart, lineEnd);
+            lineContents = getTabChar() + doc.getText(lineRange).trim().replaceAll(updateTest.getMethodName(), preparedMethodName);
+        } else {
+            lineContents = getPreparedTestMethod(lineContents);
+        }
+
+        return new ChangeEntry(lineStart, lineEnd, lineContents);
+    }
 
     public static Pattern getTestMethodPattern() {
-        Pattern pattern = Pattern.compile("public([\\s]*)function([\\s]*)test([\\w]*)\\(", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-        return pattern;
+        return Pattern.compile(REGEX_PATTERN_PHP_METHOD_TEST, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     }
 
     public static ExistingTest getInstance(int lineNumber, Document doc) {
@@ -99,33 +121,28 @@ public class generateTestName extends AnAction {
             TextRange lineRange = new TextRange(lineStart, lineEnd);
             cursorText = doc.getText(lineRange).trim();
 
-//            System.out.println(i + ": " + cursorText);
-
             for(char c : cursorText.toCharArray()) {
                 cursorChar = String.valueOf(c);
                 // if no additional protection is used, will be buggy when /* and */ are in a string or in commented // line
                 if (prevChar.equals("/") & cursorChar.equals("*") & (lineNumber >= i)) {
                     inComment = true;
-//                    System.out.println(lineNumber + " - " + i + " -(" + (lineNumber >= i) + ")- comment found in " + cursorText);
                 }
                 if (prevChar.equals("*") & cursorChar.equals("/") & (lineNumber <= i)) {
                     // take into account starting from the current line, to avoid false positives
                     if (inComment & (lineNumber <= i)) {
                         wasComment = true;
                     }
-//                    System.out.println(wasComment + " -----> " + inComment);
                     inComment = false;
                 }
                 prevChar = cursorChar;
             }
 
-//            System.out.println("[" + lineNumber + "] [" + (lineNumber < i) + "]  [" + (!inComment) + "] [" + (wasComment) + "]");
             if ((lineNumber < i) & !inComment & wasComment) {
                 // get the first function found (current pattern states that the method must start with the "test" string)
                 Matcher matcher = pattern.matcher(cursorText);
                 if (matcher.find()) {
                     // got it
-                    instance.setMatchedTestName(matcher.group(3).toString());
+                    instance.setMatchedTestName(matcher.group(3));
                     instance.setMethodLine(i);
                     instance.setMethodText(cursorText);
                     instance.setDoesApply(true);
