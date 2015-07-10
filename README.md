@@ -4,9 +4,9 @@ Ctrl + Alt + U, U
 **Features:**
 - Supports multiple cursors
 - Can insert test methods based on the current cursor(s) lines contents. Will update method if shortcut is triggered from inside a docblock comment that's followed by a "public function test______" string
+- Uses the project's indent settings; defaults on four spaces.
 
 **Limitations / bugs:**
-- doesn't use the editor's tab / spaces settings, uses four spaces by default
 - no PHP-only file filtering was set, will trigger and behave the same for any file
 
 **Features under way:**

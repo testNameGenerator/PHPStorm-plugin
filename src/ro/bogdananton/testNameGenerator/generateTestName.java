@@ -16,6 +16,7 @@ import com.intellij.openapi.application.Result;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -23,18 +24,19 @@ import java.util.regex.Pattern;
 
 public class generateTestName extends AnAction {
     public static final String REGEX_PATTERN_PHP_METHOD_TEST = "public([\\s]*)function([\\s]*)test([\\w]*)\\(";
+    public static final int DEFAULT_INDENT_SPACES = 4;
     public static Document doc;
     public static HashMap<Integer, ChangeEntry> changeList;
 
     public void actionPerformed(AnActionEvent e) {
         try {
-            Editor editor = (Editor) DataManager.getInstance().getDataContext().getData(DataConstants.EDITOR);
+            Editor editor = getEditor();
             CaretModel caretModel = getCaretModel(editor);
             List<Caret> carets = caretModel.getAllCarets();
             Document doc = getDocument(editor);
             generateTestName.doc = doc;
 
-            changeList = new HashMap<>();
+            changeList = new HashMap<Integer, ChangeEntry>();
 
             int cursor = carets.size();
             for (Caret caret: carets) {
@@ -58,12 +60,16 @@ public class generateTestName extends AnAction {
         }
     }
 
+    private static Editor getEditor() {
+        return (Editor) DataManager.getInstance().getDataContext().getData(DataConstants.EDITOR);
+    }
+
     private void showError(AnActionEvent e, String contents) {
         String group = "testNameGenerator";
         (new Notification(group, group, contents, NotificationType.ERROR)).notify(e.getProject());
     }
 
-    private Project getProject(Editor editor) {
+    private static Project getProject(Editor editor) {
         return editor.getProject();
     }
 
@@ -176,7 +182,27 @@ public class generateTestName extends AnAction {
 
     public static String getTabChar()
     {
-        return "    ";
+        int indentSpaces = DEFAULT_INDENT_SPACES;
+
+        try {
+            Editor editor = getEditor();
+            EditorSettings settings = editor.getSettings();
+            Project project = getProject(editor);
+
+            if (settings.isUseTabCharacter(project)) {
+                return "\t";
+
+            } else {
+                indentSpaces = settings.getTabSize(project);
+            }
+
+        } catch (Exception e) {
+            // will default to using spaces
+        }
+
+        char[] charArray = new char[indentSpaces];
+        Arrays.fill(charArray, ' ');
+        return new String(charArray);
     }
 
     public static String getLineDelimiter()
