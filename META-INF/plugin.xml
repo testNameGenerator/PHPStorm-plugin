@@ -32,7 +32,7 @@
 
   <application-components>
     <component>
-      <implementation-class>ro.bogdananton.testNameGenerator.BindKeymap</implementation-class>
+      <implementation-class>ro.bogdananton.testNameGenerator.settings.Shortcuts</implementation-class>
     </component>
   </application-components>
 

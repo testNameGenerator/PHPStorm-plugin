@@ -1,4 +1,4 @@
-package ro.bogdananton.testNameGenerator;
+package ro.bogdananton.testNameGenerator.settings;
 
 import com.intellij.openapi.actionSystem.KeyboardShortcut;
 import com.intellij.openapi.components.ApplicationComponent;
@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.event.InputEvent;
 
-public class BindKeymap  implements ApplicationComponent {
-    public BindKeymap(){
+public class Shortcuts implements ApplicationComponent {
+    public Shortcuts(){
     }
 
     public void initComponent(){
@@ -24,6 +24,6 @@ public class BindKeymap  implements ApplicationComponent {
 
     @NotNull
     public String getComponentName(){
-        return "BindKeymap";
+        return "Shortcuts";
     }
 }

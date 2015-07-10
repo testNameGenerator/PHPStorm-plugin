@@ -1,4 +1,4 @@
-package ro.bogdananton.testNameGenerator;
+package ro.bogdananton.testNameGenerator.datastructure;
 
 public class ChangeEntry {
 

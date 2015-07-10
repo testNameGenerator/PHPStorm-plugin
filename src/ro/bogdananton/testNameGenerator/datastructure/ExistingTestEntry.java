@@ -1,6 +1,6 @@
-package ro.bogdananton.testNameGenerator;
+package ro.bogdananton.testNameGenerator.datastructure;
 
-public class ExistingTest {
+public class ExistingTestEntry {
 
     public static int lineDifferenceBorder = 5; // search tolerance
 
