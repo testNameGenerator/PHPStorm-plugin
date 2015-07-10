@@ -6,13 +6,17 @@ Ctrl + Alt + U, U
 - Can insert test methods based on the current cursor(s) lines contents. Will update method if shortcut is triggered from inside a docblock comment that's followed by a "public function test______" string
 
 **Limitations / bugs:**
-- doesn't use the editor's tab / spaces settings, uses "\t" by default
+- doesn't use the editor's tab / spaces settings, uses four spaces by default
 - no PHP-only file filtering was set, will trigger and behave the same for any file
+
+**Features under way:**
+- setup multiple tests sets (unit, integration), to be used by the file generator and configurable in each
+- display editor gutter icon with link to the method's test file(s)
+- create test file for a method or for a class
 
 **Install:**
 Open PhpStorm's File / Settings... menu, go to Plugins and click the "Install plugin from disk..." button.
-Search for the jar file (download from the [Releases page](https://github.com/bogdananton/PhpStorm-testNameGenerator/releases)), click OK and restart the editor.
+Search for the jar file (download from the [Releases page](https://github.com/testNameGenerator/PHPStorm-plugin/releases)), click OK and restart the editor.
 
-
-Check out the [SublimeText](https://github.com/bogdananton/Sublime-testNameGenerator) or [Eclipse](https://github.com/sorinstanila/Eclipse-testNameGenerator) versions of the plugin.
-Feel free to [submit bugs or feature requests](https://github.com/bogdananton/PhpStorm-testNameGenerator/issues).
+Check out the [SublimeText](https://github.com/testNameGenerator/SublimeText-plugin) or [Eclipse](https://github.com/testNameGenerator/Eclipse-plugin) versions of the plugin.
+Feel free to [submit bugs or feature requests](https://github.com/testNameGenerator/PHPStorm-plugin/issues).
