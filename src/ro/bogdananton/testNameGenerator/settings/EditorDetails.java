@@ -39,7 +39,8 @@ public class EditorDetails
 
     public static String getLineDelimiter()
     {
-        return SystemProperties.getLineSeparator();
+        return "\n";
+        // return SystemProperties.getLineSeparator();
     }
 }
 
